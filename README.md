@@ -28,7 +28,7 @@ Ouvrez [http://localhost:3000](http://localhost:3000) pour le visualiser dans le
 
 ### `npm run build`
 
-Pour construire le dossier `build` de l'application en production mode.\
+Pour construire le dossier `build` de l'application en production mode.
 
 ## Apprendre React
 
