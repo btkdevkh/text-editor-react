@@ -16,7 +16,6 @@ const TextEditor = () => {
 
 
   const handleBtnClick = (e) => {
-    e.currentTarget.classList.remove("active");
     const dataAttr = e.currentTarget.getAttribute('data-cmd');
     switch (dataAttr) {
       case "justify":
@@ -52,7 +51,6 @@ const TextEditor = () => {
       default:
         setText("");
         txtAreaRef.current.style = "";
-        e.currentTarget.classList.remove("active");
         break;
     }
   }
