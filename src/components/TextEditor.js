@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Button from './Button';
 import Histories from './Histories';
+import { getFromLS, saveToLS } from '../utils/utils';
 
 const TextEditor = () => {
 
@@ -9,7 +10,13 @@ const TextEditor = () => {
   const [datas, setDatas] = useState(null);
   const txtAreaRef = useRef();
 
+  useEffect(() => {
+    setDatas(getFromLS("contributions"));
+  }, [])
+
+
   const handleBtnClick = (e) => {
+    e.currentTarget.classList.remove("active");
     const dataAttr = e.currentTarget.getAttribute('data-cmd');
     switch (dataAttr) {
       case "justify":
@@ -45,6 +52,7 @@ const TextEditor = () => {
       default:
         setText("");
         txtAreaRef.current.style = "";
+        e.currentTarget.classList.remove("active");
         break;
     }
   }
@@ -52,60 +60,56 @@ const TextEditor = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
+    let API_URL = "https://moderation.logora.fr";
+
+    // Define NODE_ENV mode
+    if(process.env.NODE_ENV === "development") {
+      API_URL = "http://localhost:3000";
+    }
+
     if(!text) {
       setError("* Field Required");
-    } else {      
-      fetch("/predict?text="+text)
-      .then(res => {
-        console.log("PREDICTION", res);
-        if(res.status === 200) return res.json();
-        else throw new Error("Server error");
-      })
-      .then(data => {
-        console.log("DATA PREDICTION", data);
-
-        // Call another api
-        fetch("/score?text="+text)
+    } else { 
+      // Get route/predict
+      fetch(API_URL+"/predict?text="+text)
         .then(res => {
-          console.log("SCORE", res);
           if(res.status === 200) return res.json();
-          else throw new Error("Server error");
+          else throw new Error("Server error on getting prediction");
         })
-        .then(score => {
-          console.log("DATA SCORE", score);
+        .then(data => {
+          // Get route/score
+          fetch(API_URL+"/score?text="+text)
+            .then(res => {
+              if(res.status === 200) return res.json();
+              else throw new Error("Server error on getiing score");
+            })
+            .then(score => {
+              // Construct object contribution
+              const contribution = {
+                id: Math.floor(Math.random() * Date.now()),
+                prediction: data.prediction[0],
+                score: score.score,
+                paragraph: text,
+                style: txtAreaRef.current.style.cssText
+              }
 
-          // Store all datas API calls in LS
-          const contribution = {
-            id: Math.floor(Math.random() * Date.now()),
-            prediction: data.prediction[0],
-            score: score.score,
-            paragraph: text,
-            style: txtAreaRef.current.style.cssText
-          }
+              // Get contribution in LS
+              const contributionsLS = getFromLS("contributions");
 
-          // .replace(/;/g,',').split(", ")
+              // Push to [] if null or not
+              contributionsLS.push(contribution);
 
-          let contributionsLS = JSON.parse(localStorage.getItem("contributions"));
-          if(contributionsLS === null) {
-            contributionsLS = [];
-          }
-          contributionsLS.push(contribution);
-          localStorage.setItem("contributions", JSON.stringify(contributionsLS));
-          window.location.reload();
-        })
-      })
-      .catch(err => setError(err.message));
+              // Store contribution in LS
+              saveToLS("contributions", contributionsLS);
+              window.location.reload();
+            }).catch(err => setError(err.message));
 
-      setText("");
-      setError("");
+        }).catch(err => setError(err.message));
+
+        setText("");
+        setError("");
     }
   }
-
-  useEffect(() => {
-    console.log(txtAreaRef.current.style.cssText);
-    let contributionsLS = JSON.parse(localStorage.getItem("contributions"));
-    if(contributionsLS !== null) setDatas(contributionsLS);
-  }, [])
 
   return (
     <div className="main">
@@ -119,7 +123,7 @@ const TextEditor = () => {
           </Button>
 
           <Button 
-            cmd="center" 
+            cmd="center"
             handleBtnClick={handleBtnClick} 
           >
               <i className="fas fa-align-center"></i>
@@ -195,12 +199,14 @@ const TextEditor = () => {
           value={text} 
           onChange={(e) => setText(e.target.value)}
         ></textarea>
+
         <div className="error">{error}</div>
+        
         <button className="submit" type="submit">Send</button>
 
         <hr />
 
-        {datas && <Histories datas={datas} />}
+        {datas && datas.length > 0 ? <Histories datas={datas} /> : null}
       </form>
     </div>
   )

@@ -1,6 +1,7 @@
 import React from 'react';
 
 const Button = ({ children, handleBtnClick, cmd, btnStyle }) => {
+
   return (
     <button 
       type="button"
@@ -10,6 +11,6 @@ const Button = ({ children, handleBtnClick, cmd, btnStyle }) => {
     >
       {children}
     </button>
-  )  
+  )
 }
 export default Button;

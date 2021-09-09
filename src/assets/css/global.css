@@ -90,6 +90,7 @@ button {
   cursor: pointer;
   border: none;
   border-radius: 3px;
+  transition: all 0.3s;
 }
 button i {
   font-size: 18px;
@@ -97,9 +98,6 @@ button i {
 .case {
   font-size: 17px;
   font-weight: bold;
-}
-button.active {
-  border: 1px solid salmon;
 }
 
 /* Histories.js */

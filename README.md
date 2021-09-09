@@ -6,10 +6,10 @@ Text Editor est une application React qui contient un mini éditeur de text.
 
 Appeler une API de modération pour évaluer des contributions d'un utilisateur.
 
-- Faire un appel à une API quand l'utilisateur clique sur le bouton `envoyer`
+- Faire un appel à une API quand l'utilisateur clique sur le bouton `Send`
 - L'API renvoie une prédiction entre 0 et 1
-- Si la response est supérieur de 0.5, c'est rejetée, sinon c'est acceptée
-- UI doit afficher l'historique des contributions avec une couleur différent en fonction du résultat
+- Si la réponse est supérieur de 0.5, c'est rejetée, sinon c'est acceptée
+- UI doit afficher l'historique des contributions avec une couleur différente en fonction du résultat
 
 Bonus: Afficher en plus la pertinence qui estime la qualité de la contribution d'un autre appel API.
 
