@@ -17,6 +17,10 @@ Bonus: Afficher en plus la pertinence qui estime la qualité de la contribution 
 
 Dans la raçine du dossier, vous pouvez tapez:
 
+### `npm install`
+
+Pour installer toutes les dépendances nécessaires.
+
 ### `npm start`
 
 Pour tourner l'application en développement mode.\
